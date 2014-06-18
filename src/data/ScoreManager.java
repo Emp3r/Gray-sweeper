@@ -22,67 +22,95 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import utils.Rules;
+
 public class ScoreManager {
-	
-	private String filePath = "highscores/highscores.xml";
-	private List<Record> listEasy;
-	private List<Record> listMedium;
-	private List<Record> listHard;
-	private int lowestEasy;
-	private int lowestMedium;
-	private int lowestHard;
+
+	private String filePathEasy = "highscores/easy.xml";
+	private String filePathMedium = "highscores/medium.xml";
+	private String filePathHard = "highscores/hard.xml";
+	private List<Record> listEasySmall,	listEasyMedium, listEasyLarge;
+	private List<Record> listMediumSmall, listMediumMedium, listMediumLarge;
+	private List<Record> listHardSmall, listHardMedium, listHardLarge;
+	private int lowestEasySmall, lowestEasyMedium, lowestEasyLarge;
+	private int lowestMediumSmall, lowestMediumMedium, lowestMediumLarge;
+	private int lowestHardSmall, lowestHardMedium, lowestHardLarge;
 	
 	public ScoreManager() {
-		this.listEasy = new ArrayList<Record>();
-		this.listMedium = new ArrayList<Record>();
-		this.listHard = new ArrayList<Record>();
+		this.listEasySmall = new ArrayList<Record>();
+		this.listEasyMedium = new ArrayList<Record>();
+		this.listEasyLarge = new ArrayList<Record>();
+		this.listMediumSmall = new ArrayList<Record>();
+		this.listMediumMedium = new ArrayList<Record>();
+		this.listMediumLarge = new ArrayList<Record>();
+		this.listHardSmall = new ArrayList<Record>();
+		this.listHardMedium = new ArrayList<Record>();
+		this.listHardLarge = new ArrayList<Record>();
 		
-		loadFile();
+		loadFile(Rules.EASY);
+		loadFile(Rules.MEDIUM);
+		loadFile(Rules.HARD);
 	}
 	
 	public List<Record> getListEasy() {
-		return listEasy;
+		return listEasyMedium;
 	}
 	public List<Record> getListMedium() {
-		return listMedium;
+		return listMediumMedium;
 	}
 	public List<Record> getListHard() {
-		return listHard;
+		return listHardMedium;
 	}
-	public int getLowestEasy() {
-		return lowestEasy;
+
+	public List<List<Record>> getLists(int difficulty) {
+		if (difficulty == Rules.EASY)
+			return Arrays.asList(listEasySmall, listEasyMedium, listEasyLarge);
+		else if (difficulty == Rules.MEDIUM)
+			return Arrays.asList(listMediumSmall, listMediumMedium, listMediumLarge);
+		else
+			return Arrays.asList(listHardSmall, listHardMedium, listHardLarge);
 	}
-	public int getLowestMedium() {
-		return lowestMedium;
-	}
-	public int getLowestHard() {
-		return lowestHard;
+
+	public int getLowest(int difficulty, int size) {
+		if (difficulty == Rules.EASY) {
+			if (size == Rules.SIZE_SMALL) return lowestEasySmall;
+			if (size == Rules.SIZE_MEDIUM) return lowestEasyMedium;
+			else return lowestEasyLarge;
+		}
+		else if (difficulty == Rules.MEDIUM) {
+			if (size == Rules.SIZE_SMALL) return lowestMediumSmall;
+			if (size == Rules.SIZE_MEDIUM) return lowestMediumMedium;
+			else return lowestMediumLarge;
+		}
+		else {
+			if (size == Rules.SIZE_SMALL) return lowestHardSmall;
+			if (size == Rules.SIZE_MEDIUM) return lowestHardMedium;
+			else return lowestHardLarge;
+		}
 	}
 	
-	public void writeScore(int score, String name, int difficulty) {
+	private String getFilePath(int difficulty) {
+		if (difficulty == Rules.EASY)
+			return filePathEasy;
+		else if (difficulty == Rules.MEDIUM)
+			return filePathMedium;
+		else
+			return filePathHard;
+	}
+	
+	public void writeScore(int score, String name, int difficulty, int size) {
 		Date date = new Date();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 		
-		if (difficulty == 13) {
-			if (score > lowestEasy) {
-				listEasy.set(9, new Record(score, name, dateFormat.format(date)));
-				Collections.sort(listEasy, new RecordComparator());
-			}
-		} else if (difficulty == 8) {
-			if (score > lowestMedium) {
-				listMedium.set(9, new Record(score, name, dateFormat.format(date)));
-				Collections.sort(listMedium, new RecordComparator());
-			}
-		} else if (difficulty == 5) {
-			if (score > lowestHard) {
-				listHard.set(9, new Record(score, name, dateFormat.format(date)));
-				Collections.sort(listHard, new RecordComparator());
-			}
-		}
-		saveFile();
+		List<List<Record>> tables = getLists(difficulty);
+		
+		tables.get(size).set(9, new Record(score, name, dateFormat.format(date)));
+		Collections.sort(tables.get(size), new RecordComparator());
+		
+		saveFile(difficulty);
 	}
 	
-	private void saveFile() { 
+	private void saveFile(int difficulty) { 
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
@@ -90,9 +118,9 @@ public class ScoreManager {
 			Element all = doc.createElement("highscores");
 			doc.appendChild(all);
 			
-			String difName = "easy";
-			for (List<Record> list : Arrays.asList(listEasy, listMedium, listHard)) {
-				Element dif = doc.createElement(difName);
+			String sizeName = "small";
+			for (List<Record> list : getLists(difficulty)) {
+				Element dif = doc.createElement(sizeName);
 				all.appendChild(dif);
 				
 				for (Record r : list) {
@@ -108,34 +136,34 @@ public class ScoreManager {
 					rec.appendChild(date);
 					dif.appendChild(rec);
 				}
-				if (difName.equals("medium"))
-					difName = "hard";
+				if (sizeName.equals("medium"))
+					sizeName = "large";
 				else
-					difName = "medium";
+					sizeName = "medium";
 			}
 			
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
 			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new File(filePath));
+			StreamResult result = new StreamResult(new File(getFilePath(difficulty)));
 			transformer.transform(source, result);
 		} 
 		catch (Exception e) { }
 	}
 	
-	private void loadFile() {
+	private void loadFile(int difficulty) {
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
-			Document doc = db.parse(new FileInputStream(new File(filePath)));
+			Document doc = db.parse(new FileInputStream(new File(getFilePath(difficulty))));
 			Element all = doc.getDocumentElement();
 			
 			int i = 0;
-			for (List<Record> list : Arrays.asList(listEasy, listMedium, listHard)) {
-				Node dif = all.getChildNodes().item(i);
+			for (List<Record> list : getLists(difficulty)) {
+				Node size = all.getChildNodes().item(i);
 				
-				for (int j = 0; j < dif.getChildNodes().getLength(); j++) {
-					Node rec = dif.getChildNodes().item(j);
+				for (int j = 0; j < size.getChildNodes().getLength(); j++) {
+					Node rec = size.getChildNodes().item(j);
 					
 					int score = Integer.parseInt(rec.getChildNodes().item(0).getTextContent());
 					String player = rec.getChildNodes().item(1).getTextContent();
@@ -146,23 +174,35 @@ public class ScoreManager {
 				i++;
 			}
 		} catch (Exception e) { 
-			fillTable();
-			saveFile();
+			fillTables(difficulty);
+			saveFile(difficulty);
 		}
 	}
 	
-	public void fillTable() {
+	public void fillTables(int difficulty) {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 		
-		this.listEasy = new ArrayList<Record>();
-		this.listMedium = new ArrayList<Record>();
-		this.listHard = new ArrayList<Record>();
-		
-		for (int i = 0; i < 10; i++) {
-			listEasy.add(new Record(9999, "?", dateFormat.format(new Date())));
-			listMedium.add(new Record(9999, "?", dateFormat.format(new Date())));
-			listHard.add(new Record(9999, "?", dateFormat.format(new Date())));
+		for (List<Record> list : getLists(difficulty)) {
+			for (int i = 0; i < 10; i++) {
+				list.add(new Record(9999, "?", dateFormat.format(new Date())));
+			}
 		}
+		saveFile(difficulty);
+	}
+	
+	public void resetTables() {
+		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+		
+		for (List<Record> list : Arrays.asList(listEasySmall, listEasyMedium, listEasyLarge, 
+											   listMediumSmall, listMediumMedium, listMediumLarge,
+											   listHardSmall, listHardMedium, listHardLarge)) {
+			for (int i = 0; i < 10; i++) {
+				list.set(i, new Record(9999, "?", dateFormat.format(new Date())));
+			}
+		}
+		saveFile(Rules.EASY);
+		saveFile(Rules.MEDIUM);
+		saveFile(Rules.HARD);
 	}
 	
 	private class RecordComparator implements Comparator<Record> {
