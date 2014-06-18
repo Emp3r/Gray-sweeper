@@ -3,7 +3,6 @@ package dialogs;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,55 +16,74 @@ import javax.swing.JPanel;
 
 import data.Record;
 import data.ScoreManager;
+import utils.Appearance;
+import utils.Rules;
 
 public class ScoreTableDialog extends JDialog {
 	
 	private static final long serialVersionUID = 143421226811L;
 
 	private JLabel lblTop;
-	private JPanel labelPanel;
+	private JPanel mainPanel;
 	private JButton btnOk;
-	private Color lightGray = new Color (235, 235, 235);
 
 	public ScoreTableDialog(JFrame parentFrame, ScoreManager sm, int difficulty) {
 		super(parentFrame);
 		setTitle("Highscores");
 		this.setResizable(false);
-		this.getContentPane().setBackground(Color.black);
+		this.getContentPane().setBackground(Appearance.color8);
+		
+		if (difficulty == Rules.EASY)
+			lblTop = new JLabel("Easy", JLabel.CENTER);
+		else if (difficulty == Rules.MEDIUM)
+			lblTop = new JLabel("Medium", JLabel.CENTER);
+		else
+			lblTop = new JLabel("Hard", JLabel.CENTER);
+		lblTop.setForeground(Appearance.color0);
+		lblTop.setFont(Appearance.fontComponent);
+
+		
+		GridLayout panelLayout = new GridLayout(1, 3);
+		panelLayout.setHgap(2);
+		mainPanel = new JPanel();
+		mainPanel.setLayout(panelLayout);
+		mainPanel.setBackground(Appearance.color9);
+		
 		
 		// labels
-		GridLayout labelLayout = new GridLayout(10, 1);
-		labelPanel = new JPanel();
-		labelPanel.setLayout(labelLayout);
-		labelPanel.setBackground(Color.black);
-		
-		List<Record> list;
-		if (difficulty == 13) {
-			list = sm.getListEasy();
-			lblTop = new JLabel("Easy", JLabel.CENTER);
-		} else if (difficulty == 8) {
-			list = sm.getListMedium();
-			lblTop = new JLabel("Medium", JLabel.CENTER);
-		} else {
-			list = sm.getListHard();
-			lblTop = new JLabel("Hard", JLabel.CENTER);
-		}
-		lblTop.setForeground(Color.white);
-		lblTop.setFont(new Font("Monospaced", Font.BOLD, 16));
+		String topSizeString = "Small";
+		for (List<Record> list : sm.getLists(difficulty)) {
+			
+			GridLayout labelLayout = new GridLayout(11, 1);
+			JPanel sizePanel = new JPanel();
+			sizePanel.setLayout(labelLayout);
+			sizePanel.setBackground(Appearance.color8);
 
-		int i = 1;
-		for (Record r : list) {
-			String text = String.format(" %2d.  ", i) + r.toString();
-			JLabel lblRecord = new JLabel(text);
-			lblRecord.setForeground(lightGray);
-			lblRecord.setFont(new Font("Monospaced", Font.PLAIN, 14));
-			labelPanel.add(lblRecord);
-			i++;
+			JLabel lblSize = new JLabel(topSizeString, JLabel.CENTER);
+			lblSize.setForeground(Appearance.color0);
+			lblSize.setFont(Appearance.fontDialogTop);
+			sizePanel.add(lblSize);
+			
+			int i = 1;
+			for (Record r : list) {
+				String text = String.format(" %2d.  ", i) + r.toString();
+				JLabel lblRecord = new JLabel(text, JLabel.CENTER);
+				lblRecord.setForeground(Appearance.color10);
+				lblRecord.setFont(Appearance.fontRecords);
+				sizePanel.add(lblRecord);
+				i++;
+			}
+			
+			mainPanel.add(sizePanel);
+			
+			if (topSizeString.equals("Medium")) topSizeString = "Large";
+			else topSizeString = "Medium";
 		}
+		
 		
 		btnOk = new JButton("<html><b>OK</b></html>");
-		btnOk.setBackground(Color.gray);
-		btnOk.setForeground(Color.black);
+		btnOk.setBackground(Appearance.color11);
+		btnOk.setForeground(Color.BLACK);
 		btnOk.setFocusPainted(false);
 		btnOk.setOpaque(true);
 		btnOk.setBorderPainted(false);
@@ -75,10 +93,10 @@ public class ScoreTableDialog extends JDialog {
 		});
 		
 		getRootPane().setDefaultButton(btnOk);
-		setPreferredSize(new Dimension(344, 300));
+		setPreferredSize(new Dimension(860, 300));
 		getContentPane().setLayout(new BorderLayout(8, 8));
 		getContentPane().add(lblTop, BorderLayout.NORTH);
-		getContentPane().add(labelPanel, BorderLayout.CENTER);
+		getContentPane().add(mainPanel, BorderLayout.CENTER);
 		getContentPane().add(btnOk, BorderLayout.SOUTH);
 		pack();
 	}
