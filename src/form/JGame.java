@@ -15,6 +15,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import logic.Board;
+import utils.Appearance;
 
 public class JGame extends JComponent {
 
@@ -31,10 +32,6 @@ public class JGame extends JComponent {
 	private int cleared;
 	private boolean win;
 	private boolean loose;
-	private Color lightGray = new Color (235, 235, 235);
-	private Color darkGray = new Color (100, 100, 100);
-	private Color darkGreen = new Color (60, 220, 60);
-	private Color darkCyan = new Color (0, 204, 255);
 	private Form form;
 	private Timer timer;
 	private int minutes = 0;
@@ -77,17 +74,17 @@ public class JGame extends JComponent {
 	public void paintComponent(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g2.setBackground(Color.black);
+		g2.setBackground(Appearance.color8);
 		g2.setFont(new Font("Monospaced", Font.PLAIN, 18));
 
 		// platno na pozadi
-		g.setColor(Color.black);
+		g.setColor(Appearance.color8);
 		g.fillRect(0, 0, this.width * (SIZE + GAP) + 4, (this.height + 1) * (SIZE + GAP) + 4);
 
 		// dolni button (smajlik)
-		g.setColor(Color.lightGray);
+		g.setColor(Appearance.color10);
 		g.fillRect((this.width / 2 - 1) * (SIZE + GAP) + 2, (this.height) * (SIZE + GAP) + 4 , (SIZE + GAP + SIZE), SIZE - 4);
-		g.setColor(Color.black);
+		g.setColor(Appearance.color8);
 		if (win) {
 			g.fillRect((this.width / 2 - 1) * (SIZE + GAP) + 14, (this.height) * (SIZE + GAP) + 8 , 4, 4);
 			g.fillRect((this.width / 2 - 1) * (SIZE + GAP) + 44, (this.height) * (SIZE + GAP) + 8 , 4, 4);
@@ -107,9 +104,9 @@ public class JGame extends JComponent {
 		}
 		
 		// timer
-		g.setColor(Color.lightGray);
+		g.setColor(Appearance.color10);
 		g.fillRect((this.width - 2) * (SIZE + GAP) + 2, (this.height) * (SIZE + GAP) + 4, (SIZE + GAP + SIZE), SIZE - 4);
-		g.setColor(Color.black);
+		g.setColor(Appearance.color8);
 		int xx = (this.width - 2) * (SIZE + GAP) + 4;
 		g.drawString(zeroM + minutes + ":" + zeroS + seconds, xx, (this.height) * (SIZE + GAP) + 23);
 		
@@ -119,14 +116,14 @@ public class JGame extends JComponent {
 			for (int y = 0; y < this.height; y++) { 
 				
 				if (board.getFields()[x][y].getClicked()) {
-					String letter = board.getFields()[x][y].toString();
+					char letter = board.getFields()[x][y].toChar();
 					
-					if (letter.equals("X")) { 
+					if (letter == 'X') { 
 						// mina
-						g.setColor(Color.red);
+						g.setColor(Appearance.color3);
 						g.fillRect(x * (SIZE + GAP) + 2, y * (SIZE + GAP) + 2, SIZE, SIZE);
 						
-						g.setColor(Color.black);
+						g.setColor(Color.BLACK);
 						g.fillOval(x * (SIZE + GAP) + 9, y * (SIZE + GAP) + 9, 15, 15);
 						g.fillOval(x * (SIZE + GAP) + 9, y * (SIZE + GAP) + 8, 15, 15);
 						g.fillOval(x * (SIZE + GAP) + 8, y * (SIZE + GAP) + 9, 15, 15);
@@ -137,49 +134,49 @@ public class JGame extends JComponent {
 						g.drawLine(x * (SIZE + GAP) + 5, y * (SIZE + GAP) + 15, x * (SIZE + GAP) + 26, y * (SIZE + GAP) + 15);
 						g.drawLine(x * (SIZE + GAP) + 5, y * (SIZE + GAP) + 16, x * (SIZE + GAP) + 26, y * (SIZE + GAP) + 16); 
 					}
-					else if (!letter.equals(" ")) {
+					else if (!(letter == ' ')) {
 						// cislo
-						g.setColor(lightGray);
+						g.setColor(Appearance.color10);
 						g.fillRect(x * (SIZE + GAP) + 2, y * (SIZE + GAP) + 2, SIZE, SIZE);
 						
 						switch (letter) {
-						case "1": g.setColor(Color.blue); break;
-						case "2": g.setColor(darkGreen); break;
-						case "3": g.setColor(Color.red); break;
-						case "4": g.setColor(darkCyan); break;
-						case "5": g.setColor(Color.magenta); break;
-						case "6": g.setColor(Color.orange); break;
-						case "7": g.setColor(Color.pink); break;
-						case "8": g.setColor(Color.black); break;
+						case '1': g.setColor(Appearance.color1); break;
+						case '2': g.setColor(Appearance.color2); break;
+						case '3': g.setColor(Appearance.color3); break;
+						case '4': g.setColor(Appearance.color4); break;
+						case '5': g.setColor(Appearance.color5); break;
+						case '6': g.setColor(Appearance.color6); break;
+						case '7': g.setColor(Appearance.color7); break;
+						case '8': g.setColor(Appearance.color8); break;
 						}
-						g.drawString(letter, x * (SIZE + GAP) + 11, y * (SIZE + GAP) + 23);
+						g.drawString(Character.toString(letter), x * (SIZE + GAP) + 11, y * (SIZE + GAP) + 23);
 					}
 					else {
 						// prazdno (0 min kolem policka)
-						g.setColor(Color.white);
+						g.setColor(Appearance.color0);
 						g.fillRect(x * (SIZE + GAP) + 2, y * (SIZE + GAP) + 2, SIZE, SIZE);
 					}
 				} 
 				else if (board.getFields()[x][y].getFlag()) {
 					// vlajka
 					if (loose && !board.getFields()[x][y].isMine())
-						g.setColor(darkGreen);
+						g.setColor(Appearance.color2);
 					else
-						g.setColor(darkGray);
+						g.setColor(Appearance.color9);
 					g.fillRect(x * (SIZE + GAP) + 2, y * (SIZE + GAP) + 2, SIZE, SIZE); 
 					
-					g.setColor(Color.black);
+					g.setColor(Color.BLACK);
 					int[] x1 = {(x * (SIZE + GAP) + 16), (x * (SIZE + GAP) + 18), (x * (SIZE + GAP) + 18), (x * (SIZE + GAP) + 16)};
 					int[] y1 = {(y * (SIZE + GAP) + 8), (y * (SIZE + GAP) + 8), (y * (SIZE + GAP) + 22), (y * (SIZE + GAP) + 22)};
 					g.fillPolygon(x1, y1, 4); 
-					g.setColor(Color.red);
+					g.setColor(Appearance.color3);
 					int[] x2 = {(x * (SIZE + GAP) + 10), (x * (SIZE + GAP) + 16), (x * (SIZE + GAP) + 16) };
 					int[] y2 = {(y * (SIZE + GAP) + 12), (y * (SIZE + GAP) + 8), (y * (SIZE + GAP) + 16) };
 					g.fillPolygon(x2, y2, 3);
 				}
 				else {
 					// neodkliknute
-					g.setColor(Color.gray);
+					g.setColor(Appearance.color11);
 					g.fillRect(x * (SIZE + GAP) + 2, y * (SIZE + GAP) + 2, SIZE, SIZE);
 				}
 			}

@@ -3,7 +3,6 @@ package dialogs;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,6 +13,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import utils.Appearance;
+
 public class YesNoDialog extends JDialog {
 
 	private static final long serialVersionUID = 3108333650033893578L;
@@ -23,29 +24,27 @@ public class YesNoDialog extends JDialog {
 	private JButton btnYes;
 	private JButton btnNo;
 	private boolean result = false;
-	private Color lightGray = new Color (235, 235, 235);
-	private Font font = new Font("Monospaced", Font.PLAIN, 14);
 
 	public YesNoDialog(JFrame parentFrame) {
 		super(parentFrame);
 		setTitle("Really?");
 		this.setResizable(false);
-		this.getContentPane().setBackground(Color.black);
+		this.getContentPane().setBackground(Appearance.color8);
 		
 		String text = "<html><center><br><b>Are you sure?</b><br> It will delete all records in every category.<br><br></center></html>";
 		lblReally = new JLabel(text, JLabel.CENTER);
-		lblReally.setFont(font);
-		lblReally.setForeground(lightGray);
+		lblReally.setFont(Appearance.fontDialogs);
+		lblReally.setForeground(Appearance.color10);
 		
 		GridLayout buttonLayout = new GridLayout(1, 2);
 		buttonLayout.setHgap(8);
 		buttonPanel = new JPanel();
 		buttonPanel.setLayout(buttonLayout);
-		buttonPanel.setBackground(Color.black);
+		buttonPanel.setBackground(Appearance.color8);
 		
 		btnYes = new JButton("<html><b>YES</b></html>");
-		btnYes.setBackground(Color.gray);
-		btnYes.setForeground(Color.black);
+		btnYes.setBackground(Appearance.color11);
+		btnYes.setForeground(Color.BLACK);
 		btnYes.setFocusPainted(false);
 		btnYes.setOpaque(true);
 		btnYes.setBorderPainted(false);
@@ -55,8 +54,8 @@ public class YesNoDialog extends JDialog {
 		});
 		
 		btnNo = new JButton("<html><b>NO</b></html>");
-		btnNo.setBackground(Color.gray);
-		btnNo.setForeground(Color.black);
+		btnNo.setBackground(Appearance.color11);
+		btnNo.setForeground(Color.BLACK);
 		btnNo.setFocusPainted(false);
 		btnNo.setOpaque(true);
 		btnNo.setBorderPainted(false);

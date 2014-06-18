@@ -3,7 +3,6 @@ package dialogs;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,6 +14,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import utils.Appearance;
+
 public class NewScoreDialog extends JDialog {
 	
 	private static final long serialVersionUID = 643421226831L;
@@ -25,35 +26,33 @@ public class NewScoreDialog extends JDialog {
 	private JTextField txtName;
 	private JButton btnOk;
 	private String name;
-	private Color lightGray = new Color (235, 235, 235);
-	private Font font = new Font("Monospaced", Font.PLAIN, 14);
 	
 	public NewScoreDialog(JFrame parentFrame, String score) {
 		super(parentFrame);
 		setTitle("New Score");
 		this.setResizable(false);
-		this.getContentPane().setBackground(Color.black);
+		this.getContentPane().setBackground(Appearance.color8);
 		
 		GridLayout labelLayout = new GridLayout(2, 1);
 		labelPanel = new JPanel();
 		labelPanel.setLayout(labelLayout);
-		labelPanel.setBackground(Color.black);
+		labelPanel.setBackground(Appearance.color8);
 
 		lblGratz = new JLabel("Gratz, you won with time " + score, JLabel.CENTER);
-		lblGratz.setFont(font);
-		lblGratz.setForeground(lightGray);
+		lblGratz.setFont(Appearance.fontDialogs);
+		lblGratz.setForeground(Appearance.color10);
 		lblText = new JLabel("Type your name for highscore table", JLabel.CENTER);
-		lblText.setFont(font);
-		lblText.setForeground(lightGray);
+		lblText.setFont(Appearance.fontDialogs);
+		lblText.setForeground(Appearance.color10);
 		labelPanel.add(lblGratz);
 		labelPanel.add(lblText);
 		
 		txtName = new JTextField();
-		txtName.setFont(font);
+		txtName.setFont(Appearance.fontDialogs);
 		
 		btnOk = new JButton("<html><b>OK</b></html>");
-		btnOk.setBackground(Color.gray);
-		btnOk.setForeground(Color.black);
+		btnOk.setBackground(Appearance.color11);
+		btnOk.setForeground(Color.BLACK);
 		btnOk.setFocusPainted(false);
 		btnOk.setOpaque(true);
 		btnOk.setBorderPainted(false);
