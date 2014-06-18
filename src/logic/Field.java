@@ -66,6 +66,21 @@ public class Field {
 			flag = !flag;
 	}
 
+	public char toChar() {
+		if (flag)
+			return 'F';
+		if (clicked) {
+			if (mine)
+				return 'X';
+			else if (minesAround == 0)
+				return ' ';
+			else
+				return (char)('0' + minesAround);
+		} 
+		else
+			return '-';
+	}
+	
 	@Override
 	public String toString() {
 		if (flag)
