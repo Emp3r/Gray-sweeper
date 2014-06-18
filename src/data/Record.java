@@ -26,7 +26,7 @@ public class Record {
 			result.append('0');
 		result.append(seconds);
 		
-		result.append(String.format(" %14s", player));
+		result.append(String.format(" %12s", player));
 		result.append("     ");
 		result.append(date);
 		
