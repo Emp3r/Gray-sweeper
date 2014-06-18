@@ -21,5 +21,8 @@ Dialogs package implements various dialog windows, such as dialog for highscore 
 ##### data
 Data package implements tools for highscores management. ScoreManager control highscore tables and can save to / load from XML files. Record is basic entity for tables.
 
+##### utils
+Utils package implements Rules class for difficulties constants and Appearance class for look and feel of the whole app.
+
 <hr>
 ![](http://emper.cz/img/graysweeper.png)
