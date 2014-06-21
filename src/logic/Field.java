@@ -18,7 +18,7 @@ public class Field {
 		return mine;
 	}
 
-	// pro snadnější výpočet min kolem pole
+	// for easier calculation of mines around field
 	public int isMineInt() {	
 		if (mine)
 			return 1;
@@ -47,10 +47,11 @@ public class Field {
 	}
 
 	public int click() {
-		// pokud je pole označené vlajkou, nemůže se na něj kliknout
+		// flagged field cannot be clicked
 		if (!flag) {
 			clicked = true;
-			// pokud se stouplo na minu, prohra se signalizuje číslem -1, jinak vrací počet min kolem pole
+
+			// if mine was clicked, loose return value is -1, otherwise it returns mines around field
 			if (mine)
 				return -1;
 			else
@@ -60,7 +61,7 @@ public class Field {
 		}
 	}
 
-	// nastaví vlajku - pokud není pole odkliknuté, neguje se ovlajkování
+	// sets flag, if field is  unclicked, it negates previous value
 	public void setFlag() {
 		if (!clicked)
 			flag = !flag;

@@ -17,8 +17,7 @@ public class Board {
 		this.height = h;
 		this.fields = new Field[w][h];
 		this.allFields = w * h;
-		// obtížnost - čím vetší čislo proměnné difficulty, tím méně bomb na desce
-		this.mineFields = allFields / difficulty;
+		this.mineFields = allFields / difficulty;	// difficulty - higher number for less mines on the board
 		this.clearFields = allFields - mineFields;
 
 		fillFields();
@@ -54,14 +53,14 @@ public class Board {
 		fields[x][y].setFlag();
 	}
 
-	// inicializace polí
+	// fields initialization
 	private void fillFields() {
 		for (int x = 0; x < width; x++)
 			for (int y = 0; y < height; y++)
 				fields[x][y] = new Field();
 	}
 
-	// inicializace min - náhodné rozmístění po celé desce
+	// mines initialization - random placement
 	private void setMines() {
 		Random rnd = new Random();
 
@@ -69,8 +68,8 @@ public class Board {
 			int x = rnd.nextInt(width);
 			int y = rnd.nextInt(height);
 
-			// pokud pole na nahodných souřadnicích už mina je, vygeneruje se
-			// nové náhodne pole
+			// if field on new random position is already a mine,
+			// it generates new random position
 			if (!fields[x][y].isMine())
 				fields[x][y].setMine(true);
 			else
@@ -78,44 +77,44 @@ public class Board {
 		}
 	}
 
-	// výpočet min kolem každého políčka
+	// calculation of all mines around each field
 	private void setMinesAround() {
 		for (int x = 0; x < width; x++) {
 			if (x == 0) {
-				// levý horní roh
+				// left top corner
 				fields[0][0].setMines(fields[x + 1][0].isMineInt()
 						+ fields[x][1].isMineInt() + fields[x + 1][1].isMineInt());
-				// levý spodní roh
+				// left bottom corner
 				fields[0][height - 1].setMines(fields[x + 1][height - 1].isMineInt()
 						+ fields[x][height - 2].isMineInt() + fields[x + 1][height - 2].isMineInt());
-				// všechny nerohové pole nalevo
+				// all no-corner fields on left
 				for (int y = 1; y < height - 1; y++)
 					fields[x][y].setMines(xIsZero(x, y));
 			} 
 			else if (x == width - 1) {
-				// pravý horní roh
+				// right top corner
 				fields[x][0].setMines(fields[x - 1][0].isMineInt()
 						+ fields[x][1].isMineInt() + fields[x - 1][1].isMineInt());
-				// pravý spodní roh
+				// right bottom corner
 				fields[x][height - 1].setMines(fields[x - 1][height - 1].isMineInt()
 						+ fields[x][height - 2].isMineInt() + fields[x - 1][height - 2].isMineInt());
-				// všechny nerohové pole napravo
+				// all no-corner fields on right
 				for (int y = 1; y < height - 1; y++)
 					fields[x][y].setMines(xIsWidth(x, y));
 			} 
 			else {
-				// horní pole
+				// top field
 				fields[x][0].setMines(yIsZero(x, 0));
-				// spodní pole
+				// bottom field
 				fields[x][height - 1].setMines(yIsHeight(x, height - 1));
-				// ostatní pole mezi(uprostřed, nedotýkají se žádné hrany desky)
+				// all other fields (in the middle, they don't touch any edges)
 				for (int y = 1; y < height - 1; y++)
 					fields[x][y].setMines(CountAllAround(x, y));
 			}
 		}
 	}
 
-	// pomocné funkce pro výpočet min kolem pole
+	// simple methods for easier calculation of mines around field
 	private int xIsZero(int x, int y) {
 		return fields[x + 1][y].isMineInt() + fields[x][y + 1].isMineInt()
 				+ fields[x][y - 1].isMineInt() + fields[x + 1][y + 1].isMineInt()
@@ -140,7 +139,7 @@ public class Board {
 				+ fields[x - 1][y - 1].isMineInt();
 	}
 
-	// pokud se pole ani z jedné strany nedotýká hrany desky
+	// fields in the midlle
 	private int CountAllAround(int x, int y) {
 		return fields[x + 1][y].isMineInt() + fields[x - 1][y].isMineInt()
 				+ fields[x][y + 1].isMineInt() + fields[x][y - 1].isMineInt()

@@ -77,11 +77,43 @@ public class JGame extends JComponent {
 		g2.setBackground(Appearance.color8);
 		g2.setFont(new Font("Monospaced", Font.PLAIN, 18));
 
-		// platno na pozadi
+		// background canvas
 		g.setColor(Appearance.color8);
 		g.fillRect(0, 0, this.width * (SIZE + GAP) + 4, (this.height + 1) * (SIZE + GAP) + 4);
 
-		// dolni button (smajlik)
+		paintNewGameButton(g);	// new game button (bottom "emoticon")
+		paintTimer(g);			// timer
+
+		// game board (fields)
+		for (int x = 0; x < this.width; x++) {
+			for (int y = 0; y < this.height; y++) { 
+				
+				if (board.getFields()[x][y].getClicked()) {
+					char letter = board.getFields()[x][y].toChar();
+					
+					if (letter == 'X') {	// mine
+						paintMineField(g, x, y);
+					}
+					else if (!(letter == ' ')) {	// number (more than 0 mines around)
+						paintField(g, x, y, letter);
+					}
+					else {	  // clear (0 mines around field)
+						g.setColor(Appearance.color0);
+						g.fillRect(x * (SIZE + GAP) + 2, y * (SIZE + GAP) + 2, SIZE, SIZE);
+					}
+				} 
+				else if (board.getFields()[x][y].getFlag()) {	// flag
+					paintFlagField(g, x, y);
+				}
+				else {	 // unclicked
+					g.setColor(Appearance.color11);
+					g.fillRect(x * (SIZE + GAP) + 2, y * (SIZE + GAP) + 2, SIZE, SIZE);
+				}
+			}
+		}
+	}
+	
+	private void paintNewGameButton(Graphics g) {
 		g.setColor(Appearance.color10);
 		g.fillRect((this.width / 2 - 1) * (SIZE + GAP) + 2, (this.height) * (SIZE + GAP) + 4 , (SIZE + GAP + SIZE), SIZE - 4);
 		g.setColor(Appearance.color8);
@@ -102,101 +134,82 @@ public class JGame extends JComponent {
 			g.fillRect((this.width / 2 - 1) * (SIZE + GAP) + 44, (this.height) * (SIZE + GAP) + 8 , 4, 4);
 			g.fillRect((this.width / 2 - 1) * (SIZE + GAP) + 6, (this.height) * (SIZE + GAP) + 18 , (SIZE + SIZE - 6), 4);
 		}
-		
-		// timer
-		g.setColor(Appearance.color10);
-		g.fillRect((this.width - 2) * (SIZE + GAP) + 2, (this.height) * (SIZE + GAP) + 4, (SIZE + GAP + SIZE), SIZE - 4);
-		g.setColor(Appearance.color8);
-		int xx = (this.width - 2) * (SIZE + GAP) + 4;
-		g.drawString(zeroM + minutes + ":" + zeroS + seconds, xx, (this.height) * (SIZE + GAP) + 23);
-		
-
-		// hraci deska (policka)
-		for (int x = 0; x < this.width; x++) {
-			for (int y = 0; y < this.height; y++) { 
-				
-				if (board.getFields()[x][y].getClicked()) {
-					char letter = board.getFields()[x][y].toChar();
-					
-					if (letter == 'X') { 
-						// mina
-						g.setColor(Appearance.color3);
-						g.fillRect(x * (SIZE + GAP) + 2, y * (SIZE + GAP) + 2, SIZE, SIZE);
-						
-						g.setColor(Color.BLACK);
-						g.fillOval(x * (SIZE + GAP) + 9, y * (SIZE + GAP) + 9, 15, 15);
-						g.fillOval(x * (SIZE + GAP) + 9, y * (SIZE + GAP) + 8, 15, 15);
-						g.fillOval(x * (SIZE + GAP) + 8, y * (SIZE + GAP) + 9, 15, 15);
-						g.fillOval(x * (SIZE + GAP) + 8, y * (SIZE + GAP) + 8, 15, 15);
-
-						g.drawLine(x * (SIZE + GAP) + 15, y * (SIZE + GAP) + 5, x * (SIZE + GAP) + 15, y * (SIZE + GAP) + 26);
-						g.drawLine(x * (SIZE + GAP) + 16, y * (SIZE + GAP) + 5, x * (SIZE + GAP) + 16, y * (SIZE + GAP) + 26);
-						g.drawLine(x * (SIZE + GAP) + 5, y * (SIZE + GAP) + 15, x * (SIZE + GAP) + 26, y * (SIZE + GAP) + 15);
-						g.drawLine(x * (SIZE + GAP) + 5, y * (SIZE + GAP) + 16, x * (SIZE + GAP) + 26, y * (SIZE + GAP) + 16); 
-					}
-					else if (!(letter == ' ')) {
-						// cislo
-						g.setColor(Appearance.color10);
-						g.fillRect(x * (SIZE + GAP) + 2, y * (SIZE + GAP) + 2, SIZE, SIZE);
-						
-						switch (letter) {
-						case '1': g.setColor(Appearance.color1); break;
-						case '2': g.setColor(Appearance.color2); break;
-						case '3': g.setColor(Appearance.color3); break;
-						case '4': g.setColor(Appearance.color4); break;
-						case '5': g.setColor(Appearance.color5); break;
-						case '6': g.setColor(Appearance.color6); break;
-						case '7': g.setColor(Appearance.color7); break;
-						case '8': g.setColor(Appearance.color8); break;
-						}
-						g.drawString(Character.toString(letter), x * (SIZE + GAP) + 11, y * (SIZE + GAP) + 23);
-					}
-					else {
-						// prazdno (0 min kolem policka)
-						g.setColor(Appearance.color0);
-						g.fillRect(x * (SIZE + GAP) + 2, y * (SIZE + GAP) + 2, SIZE, SIZE);
-					}
-				} 
-				else if (board.getFields()[x][y].getFlag()) {
-					// vlajka
-					if (loose && !board.getFields()[x][y].isMine())
-						g.setColor(Appearance.color2);
-					else
-						g.setColor(Appearance.color9);
-					g.fillRect(x * (SIZE + GAP) + 2, y * (SIZE + GAP) + 2, SIZE, SIZE); 
-					
-					g.setColor(Color.BLACK);
-					int[] x1 = {(x * (SIZE + GAP) + 16), (x * (SIZE + GAP) + 18), (x * (SIZE + GAP) + 18), (x * (SIZE + GAP) + 16)};
-					int[] y1 = {(y * (SIZE + GAP) + 8), (y * (SIZE + GAP) + 8), (y * (SIZE + GAP) + 22), (y * (SIZE + GAP) + 22)};
-					g.fillPolygon(x1, y1, 4); 
-					g.setColor(Appearance.color3);
-					int[] x2 = {(x * (SIZE + GAP) + 10), (x * (SIZE + GAP) + 16), (x * (SIZE + GAP) + 16) };
-					int[] y2 = {(y * (SIZE + GAP) + 12), (y * (SIZE + GAP) + 8), (y * (SIZE + GAP) + 16) };
-					g.fillPolygon(x2, y2, 3);
-				}
-				else {
-					// neodkliknute
-					g.setColor(Appearance.color11);
-					g.fillRect(x * (SIZE + GAP) + 2, y * (SIZE + GAP) + 2, SIZE, SIZE);
-				}
-			}
-		}
 	}
 
-	public void mouseClick(MouseEvent e) {
+	private void paintTimer(Graphics g) {
+		g.setColor(Appearance.color10);
+		g.fillRect((this.width - 2) * (SIZE + GAP) + 2, (this.height) * (SIZE + GAP) + 4, (SIZE + GAP + SIZE), SIZE - 4);
+		
+		g.setColor(Appearance.color8);
+		int x = (this.width - 2) * (SIZE + GAP) + 4;
+		g.drawString(zeroM + minutes + ":" + zeroS + seconds, x, (this.height) * (SIZE + GAP) + 23);
+	}
+	
+	private void paintMineField(Graphics g, int x, int y) {
+		g.setColor(Appearance.color3);
+		g.fillRect(x * (SIZE + GAP) + 2, y * (SIZE + GAP) + 2, SIZE, SIZE);
+		
+		g.setColor(Color.BLACK);
+		g.fillOval(x * (SIZE + GAP) + 9, y * (SIZE + GAP) + 9, 15, 15);
+		g.fillOval(x * (SIZE + GAP) + 9, y * (SIZE + GAP) + 8, 15, 15);
+		g.fillOval(x * (SIZE + GAP) + 8, y * (SIZE + GAP) + 9, 15, 15);
+		g.fillOval(x * (SIZE + GAP) + 8, y * (SIZE + GAP) + 8, 15, 15);
+
+		g.drawLine(x * (SIZE + GAP) + 15, y * (SIZE + GAP) + 5, x * (SIZE + GAP) + 15, y * (SIZE + GAP) + 26);
+		g.drawLine(x * (SIZE + GAP) + 16, y * (SIZE + GAP) + 5, x * (SIZE + GAP) + 16, y * (SIZE + GAP) + 26);
+		g.drawLine(x * (SIZE + GAP) + 5, y * (SIZE + GAP) + 15, x * (SIZE + GAP) + 26, y * (SIZE + GAP) + 15);
+		g.drawLine(x * (SIZE + GAP) + 5, y * (SIZE + GAP) + 16, x * (SIZE + GAP) + 26, y * (SIZE + GAP) + 16); 
+	}
+	
+	private void paintFlagField(Graphics g, int x, int y) {
+		if (loose && !board.getFields()[x][y].isMine())
+			g.setColor(Appearance.color2);
+		else
+			g.setColor(Appearance.color9);
+		g.fillRect(x * (SIZE + GAP) + 2, y * (SIZE + GAP) + 2, SIZE, SIZE); 
+		
+		g.setColor(Color.BLACK);
+		int[] x1 = {(x * (SIZE + GAP) + 16), (x * (SIZE + GAP) + 18), (x * (SIZE + GAP) + 18), (x * (SIZE + GAP) + 16)};
+		int[] y1 = {(y * (SIZE + GAP) + 8), (y * (SIZE + GAP) + 8), (y * (SIZE + GAP) + 22), (y * (SIZE + GAP) + 22)};
+		g.fillPolygon(x1, y1, 4); 
+		
+		g.setColor(Appearance.color3);
+		int[] x2 = {(x * (SIZE + GAP) + 10), (x * (SIZE + GAP) + 16), (x * (SIZE + GAP) + 16) };
+		int[] y2 = {(y * (SIZE + GAP) + 12), (y * (SIZE + GAP) + 8), (y * (SIZE + GAP) + 16) };
+		g.fillPolygon(x2, y2, 3);
+	}
+	
+	private void paintField(Graphics g, int x, int y, char letter) {
+		g.setColor(Appearance.color10);
+		g.fillRect(x * (SIZE + GAP) + 2, y * (SIZE + GAP) + 2, SIZE, SIZE);
+		
+		switch (letter) {
+		case '1': g.setColor(Appearance.color1); break;
+		case '2': g.setColor(Appearance.color2); break;
+		case '3': g.setColor(Appearance.color3); break;
+		case '4': g.setColor(Appearance.color4); break;
+		case '5': g.setColor(Appearance.color5); break;
+		case '6': g.setColor(Appearance.color6); break;
+		case '7': g.setColor(Appearance.color7); break;
+		case '8': g.setColor(Appearance.color8); break;
+		}
+		g.drawString(Character.toString(letter), x * (SIZE + GAP) + 11, y * (SIZE + GAP) + 23);
+	}
+	
+	private void mouseClick(MouseEvent e) {
 		int px = (e.getX() - 3) / (SIZE + GAP);
 		int py = (e.getY() - 3) / (SIZE + GAP);
 
+		// game board was clicked
 		if (px < this.width && py < this.height && !win && !loose) {
 			if (SwingUtilities.isLeftMouseButton(e)) 
 				click(px, py);
 			else
 				flag(px, py);
 		}
-
-		if (px >= (this.width / 2 - 1) && px < (this.width / 2 + 1) && py == (this.height)) {
+		// bottom new game button was clicked
+		else if (px >= (this.width / 2 - 1) && px < (this.width / 2 + 1) && py == (this.height))
 			newGame();
-		}
 	}
 	
 	private void resetTimer() {
@@ -223,7 +236,19 @@ public class JGame extends JComponent {
 		this.height = height;
 		newGame();
 	}
-	
+     
+	public String getScore() {
+		StringBuilder result = new StringBuilder();
+		
+		if (minutes < 10)result.append('0');
+		result.append(minutes);
+		result.append(":");
+		if (seconds < 10) result.append('0');
+		result.append(seconds);
+		
+		return result.toString();
+	}
+
 	ActionListener timerAction = new ActionListener() { 
         public void actionPerformed(ActionEvent e) {
         	if (seconds == 59) {
@@ -240,18 +265,6 @@ public class JGame extends JComponent {
         	repaint();
         }
      };
-     
-	public String getScore() {
-		StringBuilder result = new StringBuilder();
-		
-		if (minutes < 10)result.append('0');
-		result.append(minutes);
-		result.append(":");
-		if (seconds < 10) result.append('0');
-		result.append(seconds);
-		
-		return result.toString();
-	}
 	
 	public int getMinutes() {
 		return minutes;
@@ -295,19 +308,16 @@ public class JGame extends JComponent {
 			if (!board.getFields()[x][y].getClicked()) {
 				int c = board.click(x, y);
 
-				if (c == -2) {
-					// pole je ovlajkované
+				if (c == -2) {	 // field is flagged
 					return;
-				} else if (c == -1) {
-					// pole je mina
+				} else if (c == -1) {	// field is mine
 					loose = true;
 					timer.stop();
 					return;
 				}
 				cleared++;
 
-				// pokud je stejný počet odkliknutých polí s celkovým
-				// počtem polí bez min, hráč vyhrál
+				// win (if player has cleared all clear fields)
 				if (cleared == clearFields) {
 					win = true;
 					this.repaint();
@@ -316,8 +326,8 @@ public class JGame extends JComponent {
 					return;
 				}
 				
-				// pokud má pole 0 min kolem sebe, automaticky se
-				// odklikají všechny pole kolem něho
+				// if field has 0 mines around, it automatically 
+				// clicks on every field around it
 				if (c == 0)
 					autoClick(x, y);
 			}
