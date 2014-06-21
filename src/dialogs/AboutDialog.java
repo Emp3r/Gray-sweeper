@@ -52,16 +52,7 @@ public class AboutDialog extends JDialog {
 		labelPanel.add(new JLabel());
 		labelPanel.add(lblInfo);
 
-		btnOk = new JButton("<html><b>OK</b></html>");
-		btnOk.setBackground(Appearance.color11);
-		btnOk.setForeground(Color.BLACK);
-		btnOk.setFocusPainted(false);
-		btnOk.setOpaque(true);
-		btnOk.setBorderPainted(false);
-		btnOk.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) { setVisible(false); }
-		});
+		initializeOkButton();
 		
 		getRootPane().setDefaultButton(btnOk);
 		this.setPreferredSize(new Dimension(338, 208));
@@ -70,6 +61,21 @@ public class AboutDialog extends JDialog {
 		getContentPane().add(labelPanel, BorderLayout.CENTER);
 		getContentPane().add(btnOk, BorderLayout.SOUTH);
 		pack();
+	}
+	
+	private void initializeOkButton() {
+		btnOk = new JButton("<html><b>OK</b></html>");
+		btnOk.setBackground(Appearance.color11);
+		btnOk.setForeground(Color.BLACK);
+		btnOk.setFocusPainted(false);
+		btnOk.setOpaque(true);
+		btnOk.setBorderPainted(false);
+		btnOk.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) { 
+				setVisible(false);
+			}
+		});
 	}
 }
 

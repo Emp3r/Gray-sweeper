@@ -33,6 +33,34 @@ public class ScoreTableDialog extends JDialog {
 		this.setResizable(false);
 		this.getContentPane().setBackground(Appearance.color8);
 		
+		initializeTopLabel(difficulty);
+		initializeOkButton();
+
+		GridLayout panelLayout = new GridLayout(1, 3);
+		panelLayout.setHgap(2);
+		mainPanel = new JPanel();
+		mainPanel.setLayout(panelLayout);
+		mainPanel.setBackground(Appearance.color9);		
+		
+		String topSizeString = "Small";
+		for (List<Record> list : sm.getLists(difficulty)) {
+			initializeLabels(list, topSizeString);
+			
+			if (topSizeString.equals("Medium")) topSizeString = "Large";
+			else topSizeString = "Medium";
+		}
+		
+		getRootPane().setDefaultButton(btnOk);
+		setPreferredSize(new Dimension(856, 300));
+		getContentPane().setLayout(new BorderLayout(8, 8));
+		getContentPane().add(lblTop, BorderLayout.NORTH);
+		getContentPane().add(mainPanel, BorderLayout.CENTER);
+		getContentPane().add(btnOk, BorderLayout.SOUTH);
+		pack();
+	}
+	
+	// top label lblTop - Easy/Medium/Hard
+	private void initializeTopLabel(int difficulty) {
 		if (difficulty == Rules.EASY)
 			lblTop = new JLabel("Easy", JLabel.CENTER);
 		else if (difficulty == Rules.MEDIUM)
@@ -41,46 +69,32 @@ public class ScoreTableDialog extends JDialog {
 			lblTop = new JLabel("Hard", JLabel.CENTER);
 		lblTop.setForeground(Appearance.color0);
 		lblTop.setFont(Appearance.fontComponent);
+	}
+	
+	private void initializeLabels(List<Record> list, String topString) {
+		GridLayout labelLayout = new GridLayout(11, 1);
+		JPanel sizePanel = new JPanel();
+		sizePanel.setLayout(labelLayout);
+		sizePanel.setBackground(Appearance.color8);
 
+		JLabel lblSize = new JLabel(topString, JLabel.CENTER);
+		lblSize.setForeground(Appearance.color0);
+		lblSize.setFont(Appearance.fontDialogTop);
+		sizePanel.add(lblSize);
 		
-		GridLayout panelLayout = new GridLayout(1, 3);
-		panelLayout.setHgap(2);
-		mainPanel = new JPanel();
-		mainPanel.setLayout(panelLayout);
-		mainPanel.setBackground(Appearance.color9);
-		
-		
-		// labels
-		String topSizeString = "Small";
-		for (List<Record> list : sm.getLists(difficulty)) {
-			
-			GridLayout labelLayout = new GridLayout(11, 1);
-			JPanel sizePanel = new JPanel();
-			sizePanel.setLayout(labelLayout);
-			sizePanel.setBackground(Appearance.color8);
-
-			JLabel lblSize = new JLabel(topSizeString, JLabel.CENTER);
-			lblSize.setForeground(Appearance.color0);
-			lblSize.setFont(Appearance.fontDialogTop);
-			sizePanel.add(lblSize);
-			
-			int i = 1;
-			for (Record r : list) {
-				String text = String.format(" %2d.  ", i) + r.toString();
-				JLabel lblRecord = new JLabel(text, JLabel.CENTER);
-				lblRecord.setForeground(Appearance.color10);
-				lblRecord.setFont(Appearance.fontRecords);
-				sizePanel.add(lblRecord);
-				i++;
-			}
-			
-			mainPanel.add(sizePanel);
-			
-			if (topSizeString.equals("Medium")) topSizeString = "Large";
-			else topSizeString = "Medium";
+		int i = 1;
+		for (Record r : list) {
+			String text = String.format(" %2d.  ", i) + r.toString();
+			JLabel lblRecord = new JLabel(text, JLabel.CENTER);
+			lblRecord.setForeground(Appearance.color10);
+			lblRecord.setFont(Appearance.fontRecords);
+			sizePanel.add(lblRecord);
+			i++;
 		}
-		
-		
+		mainPanel.add(sizePanel);
+	}
+	
+	private void initializeOkButton() {
 		btnOk = new JButton("<html><b>OK</b></html>");
 		btnOk.setBackground(Appearance.color11);
 		btnOk.setForeground(Color.BLACK);
@@ -89,17 +103,9 @@ public class ScoreTableDialog extends JDialog {
 		btnOk.setBorderPainted(false);
 		btnOk.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) { setVisible(false); }
+			public void actionPerformed(ActionEvent e) {
+				setVisible(false);
+			}
 		});
-		
-		getRootPane().setDefaultButton(btnOk);
-		setPreferredSize(new Dimension(860, 300));
-		getContentPane().setLayout(new BorderLayout(8, 8));
-		getContentPane().add(lblTop, BorderLayout.NORTH);
-		getContentPane().add(mainPanel, BorderLayout.CENTER);
-		getContentPane().add(btnOk, BorderLayout.SOUTH);
-		pack();
 	}
-	
 }
-

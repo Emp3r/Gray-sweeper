@@ -50,19 +50,7 @@ public class NewScoreDialog extends JDialog {
 		txtName = new JTextField();
 		txtName.setFont(Appearance.fontDialogs);
 		
-		btnOk = new JButton("<html><b>OK</b></html>");
-		btnOk.setBackground(Appearance.color11);
-		btnOk.setForeground(Color.BLACK);
-		btnOk.setFocusPainted(false);
-		btnOk.setOpaque(true);
-		btnOk.setBorderPainted(false);
-		btnOk.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				name = txtName.getText();
-				setVisible(false);
-			}
-		});
+		initializeOkButton();
 
 		getRootPane().setDefaultButton(btnOk);
 		this.setPreferredSize(new Dimension(286, 136));
@@ -75,5 +63,26 @@ public class NewScoreDialog extends JDialog {
 	
 	public String getResult() {
 		return name;
+	}
+	
+	private void initializeOkButton() {
+		btnOk = new JButton("<html><b>OK</b></html>");
+		btnOk.setBackground(Appearance.color11);
+		btnOk.setForeground(Color.BLACK);
+		btnOk.setFocusPainted(false);
+		btnOk.setOpaque(true);
+		btnOk.setBorderPainted(false);
+		btnOk.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (txtName.getText().length() > 11) {
+					lblText.setText("Nick too long!");
+					repaint();
+				} else {
+					name = txtName.getText();
+					setVisible(false);
+				}
+			}
+		});
 	}
 }

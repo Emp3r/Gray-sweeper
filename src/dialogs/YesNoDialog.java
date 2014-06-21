@@ -25,13 +25,13 @@ public class YesNoDialog extends JDialog {
 	private JButton btnNo;
 	private boolean result = false;
 
-	public YesNoDialog(JFrame parentFrame) {
+	public YesNoDialog(JFrame parentFrame, String string) {
 		super(parentFrame);
 		setTitle("Really?");
 		this.setResizable(false);
 		this.getContentPane().setBackground(Appearance.color8);
 		
-		String text = "<html><center><br><b>Are you sure?</b><br> It will delete all records in every category.<br><br></center></html>";
+		String text = "<html><center><br><b>Are you sure?</b><br> " + string + "<br><br></center></html>";
 		lblReally = new JLabel(text, JLabel.CENTER);
 		lblReally.setFont(Appearance.fontDialogs);
 		lblReally.setForeground(Appearance.color10);
@@ -41,30 +41,10 @@ public class YesNoDialog extends JDialog {
 		buttonPanel = new JPanel();
 		buttonPanel.setLayout(buttonLayout);
 		buttonPanel.setBackground(Appearance.color8);
-		
-		btnYes = new JButton("<html><b>YES</b></html>");
-		btnYes.setBackground(Appearance.color11);
-		btnYes.setForeground(Color.BLACK);
-		btnYes.setFocusPainted(false);
-		btnYes.setOpaque(true);
-		btnYes.setBorderPainted(false);
-		btnYes.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) { setVisible(false); result = true; }
-		});
-		
-		btnNo = new JButton("<html><b>NO</b></html>");
-		btnNo.setBackground(Appearance.color11);
-		btnNo.setForeground(Color.BLACK);
-		btnNo.setFocusPainted(false);
-		btnNo.setOpaque(true);
-		btnNo.setBorderPainted(false);
-		btnNo.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) { setVisible(false); result = false; }
-		});
 
+		initializeNoButton();
 		buttonPanel.add(btnNo);
+		initializeYesButton();
 		buttonPanel.add(btnYes);
 		
 		this.setPreferredSize(new Dimension(380, 120));
@@ -73,9 +53,40 @@ public class YesNoDialog extends JDialog {
 		getContentPane().add(buttonPanel, BorderLayout.SOUTH);
 		pack();
 	}
-	
 
 	public boolean getResult() {
 		return result;
+	}
+	
+	private void initializeNoButton() {
+		btnNo = new JButton("<html><b>NO</b></html>");
+		btnNo.setBackground(Appearance.color11);
+		btnNo.setForeground(Color.BLACK);
+		btnNo.setFocusPainted(false);
+		btnNo.setOpaque(true);
+		btnNo.setBorderPainted(false);
+		btnNo.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) { 
+				setVisible(false); 
+				result = false; 
+			}
+		});
+	}
+	
+	private void initializeYesButton() {
+		btnYes = new JButton("<html><b>YES</b></html>");
+		btnYes.setBackground(Appearance.color11);
+		btnYes.setForeground(Color.BLACK);
+		btnYes.setFocusPainted(false);
+		btnYes.setOpaque(true);
+		btnYes.setBorderPainted(false);
+		btnYes.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) { 
+				setVisible(false); 
+				result = true; 
+			}
+		});
 	}
 }
