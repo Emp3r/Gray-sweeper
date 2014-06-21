@@ -51,16 +51,6 @@ public class ScoreManager {
 		loadFile(Rules.MEDIUM);
 		loadFile(Rules.HARD);
 	}
-	
-	public List<Record> getListEasy() {
-		return listEasyMedium;
-	}
-	public List<Record> getListMedium() {
-		return listMediumMedium;
-	}
-	public List<Record> getListHard() {
-		return listHardMedium;
-	}
 
 	public List<List<Record>> getLists(int difficulty) {
 		if (difficulty == Rules.EASY)
@@ -98,6 +88,7 @@ public class ScoreManager {
 			return filePathHard;
 	}
 	
+	// write new score into tables
 	public void writeScore(int score, String name, int difficulty, int size) {
 		Date date = new Date();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
@@ -107,7 +98,20 @@ public class ScoreManager {
 		tables.get(size).set(9, new Record(score, name, dateFormat.format(date)));
 		Collections.sort(tables.get(size), new RecordComparator());
 		
+		setLowests();
 		saveFile(difficulty);
+	}
+	
+	private void setLowests() {
+		lowestEasySmall = listEasySmall.get(9).score;
+		lowestEasyMedium = listEasyMedium.get(9).score;
+		lowestEasyLarge = listEasyLarge.get(9).score;
+		lowestMediumSmall = listMediumSmall.get(9).score;
+		lowestMediumMedium = listMediumMedium.get(9).score;
+		lowestMediumLarge = listMediumLarge.get(9).score;
+		lowestHardSmall = listHardSmall.get(9).score;
+		lowestHardMedium = listHardMedium.get(9).score;
+		lowestHardLarge = listHardLarge.get(9).score;
 	}
 	
 	private void saveFile(int difficulty) { 
@@ -183,9 +187,8 @@ public class ScoreManager {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 		
 		for (List<Record> list : getLists(difficulty)) {
-			for (int i = 0; i < 10; i++) {
+			for (int i = 0; i < 10; i++)
 				list.add(new Record(9999, "?", dateFormat.format(new Date())));
-			}
 		}
 		saveFile(difficulty);
 	}
@@ -196,9 +199,8 @@ public class ScoreManager {
 		for (List<Record> list : Arrays.asList(listEasySmall, listEasyMedium, listEasyLarge, 
 											   listMediumSmall, listMediumMedium, listMediumLarge,
 											   listHardSmall, listHardMedium, listHardLarge)) {
-			for (int i = 0; i < 10; i++) {
+			for (int i = 0; i < 10; i++)
 				list.set(i, new Record(9999, "?", dateFormat.format(new Date())));
-			}
 		}
 		saveFile(Rules.EASY);
 		saveFile(Rules.MEDIUM);

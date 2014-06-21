@@ -14,8 +14,7 @@ import javax.swing.KeyStroke;
 
 import data.ScoreManager;
 import dialogs.*;
-import utils.Appearance;
-import utils.Rules;
+import utils.*;
 
 public class Form extends JFrame {
 
@@ -51,21 +50,23 @@ public class Form extends JFrame {
 	}
 
 	// win dialog
-	public void win(int dif) {
-		NewScoreDialog dialog = new NewScoreDialog(this, game.getScore());
-		dialog.setModal(true);
-		dialog.setLocationRelativeTo(this);
-		dialog.setVisible(true);
+	public void win(int difficulty) {
+		int score = (game.getMinutes() * 100) + game.getSeconds();
 		
-		if (dialog.getResult() != null && !dialog.getResult().equals("")) { 
-			int score = (game.getMinutes() * 100) + game.getSeconds();
-			scoreManager.writeScore(score, dialog.getResult(), dif, actualSize);
+		if (score < scoreManager.getLowest(difficulty, actualSize)) {
+			NewScoreDialog dialog = new NewScoreDialog(this, game.getScore());
+			dialog.setModal(true);
+			dialog.setLocationRelativeTo(this);
+			dialog.setVisible(true);
+			
+			if (dialog.getResult() != null && !dialog.getResult().equals(""))
+				scoreManager.writeScore(score, dialog.getResult(), difficulty, actualSize);
 		}
 	}
 	
-	// highscore tables
-	public void scoreDialog(int dif) {
-		ScoreTableDialog dialog = new ScoreTableDialog(this, scoreManager, dif);
+	// highscore tables dialog
+	public void scoreDialog(int difficulty) {
+		ScoreTableDialog dialog = new ScoreTableDialog(this, scoreManager, difficulty);
 		dialog.setModal(true);
 		dialog.setLocationRelativeTo(this);
 		dialog.setVisible(true);
@@ -80,8 +81,8 @@ public class Form extends JFrame {
 	}
 	
 	// yes/no dialog
-	public boolean yesNoDialog() {
-		YesNoDialog dialog = new YesNoDialog(this);
+	public boolean yesNoDialog(String text) {
+		YesNoDialog dialog = new YesNoDialog(this, text);
 		dialog.setModal(true);
 		dialog.setLocationRelativeTo(this);
 		dialog.setVisible(true);
@@ -96,20 +97,28 @@ public class Form extends JFrame {
 		menuSize = new JMenu("Size");
 		menuScore = new JMenu("Highscores");
 
-		// game
+		initializeMenuGame();
+		initializeMenuDifficulty();
+		initializeMenuSize();
+		initializeMenuHighscores();
+	}
+	
+	private void initializeMenuGame() {
 		JMenuItem menuItemNew = new JMenuItem("New game");
+		JMenuItem menuItemAbout = new JMenuItem("About");
+		JMenu menuItemColors = new JMenu("Colors");
+		JMenuItem menuItemExit = new JMenuItem("Exit");
+		
 		menuItemNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
 		menuItemNew.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) { game.newGame(); }
 		});
-		JMenuItem menuItemAbout = new JMenuItem("About");
 		menuItemAbout.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) { aboutDialog(); }
 		});
 		// colors
-		JMenu menuItemColors = new JMenu("Colors");
 		final JCheckBoxMenuItem menuItemColorGray = new JCheckBoxMenuItem("Gray");
 		final JCheckBoxMenuItem menuItemColorReverse = new JCheckBoxMenuItem("Reverse");
 		menuItemColorGray.addActionListener(new ActionListener() {
@@ -132,51 +141,72 @@ public class Form extends JFrame {
 		menuItemColors.add(menuItemColorGray);
 		menuItemColors.add(menuItemColorReverse);
 		
-		//
-		
-		JMenuItem menuItemExit = new JMenuItem("Exit");
 		menuItemExit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
 		menuItemExit.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) { setVisible(false); dispose(); System.exit(0); }
+			public void actionPerformed(ActionEvent e) {
+				setVisible(false);
+				dispose();
+				System.exit(0);
+			}
 		});
 		menuGame.add(menuItemNew);
 		menuGame.add(menuItemColors);
 		menuGame.add(menuItemAbout);
 		menuGame.add(menuItemExit);
 		mainMenu.add(menuGame);
-		
-		// difficulty
+	}
+	
+	private void initializeMenuDifficulty() {
 		final JCheckBoxMenuItem menuItemEasy = new JCheckBoxMenuItem("Easy");
 		final JCheckBoxMenuItem menuItemMedium = new JCheckBoxMenuItem("Medium");
 		final JCheckBoxMenuItem menuItemHard = new JCheckBoxMenuItem("Hard");
+		
 		menuItemEasy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, ActionEvent.CTRL_MASK));
 		menuItemEasy.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) { game.setDifficulty(Rules.EASY); game.newGame(); 
-				menuItemEasy.setSelected(true); menuItemMedium.setSelected(false); menuItemHard.setSelected(false);}
+			public void actionPerformed(ActionEvent e) { 
+				game.setDifficulty(Rules.EASY);
+				game.newGame();
+				menuItemEasy.setSelected(true);
+				menuItemMedium.setSelected(false);
+				menuItemHard.setSelected(false);
+			}
 		});
 		menuItemMedium.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_2, ActionEvent.CTRL_MASK));
 		menuItemMedium.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) { game.setDifficulty(Rules.MEDIUM); game.newGame(); 
-				menuItemMedium.setSelected(true); menuItemEasy.setSelected(false); menuItemHard.setSelected(false);}
+			public void actionPerformed(ActionEvent e) { 
+				game.setDifficulty(Rules.MEDIUM);
+				game.newGame(); 
+				menuItemMedium.setSelected(true);
+				menuItemEasy.setSelected(false);
+				menuItemHard.setSelected(false);
+			}
 		});
 		menuItemHard.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_3, ActionEvent.CTRL_MASK));
 		menuItemHard.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) { game.setDifficulty(Rules.HARD); game.newGame(); 
-				menuItemHard.setSelected(true); menuItemEasy.setSelected(false); menuItemMedium.setSelected(false);}
+			public void actionPerformed(ActionEvent e) { 
+				game.setDifficulty(Rules.HARD);
+				game.newGame();
+				menuItemHard.setSelected(true);
+				menuItemEasy.setSelected(false);
+				menuItemMedium.setSelected(false);
+			}
 		});
 		menuItemMedium.setSelected(true);
 		menuDifficulty.add(menuItemEasy);
 		menuDifficulty.add(menuItemMedium);
 		menuDifficulty.add(menuItemHard);
 		mainMenu.add(menuDifficulty);
-		
+	}
+	
+	private void initializeMenuSize() {
 		final JCheckBoxMenuItem menuItemSizeSmall = new JCheckBoxMenuItem("Small");
 		final JCheckBoxMenuItem menuItemSizeMedium = new JCheckBoxMenuItem("Medium");
 		final JCheckBoxMenuItem menuItemSizeLarge = new JCheckBoxMenuItem("Large");
+		
 		menuItemSizeSmall.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, ActionEvent.ALT_MASK));
 		menuItemSizeSmall.addActionListener(new ActionListener() {
 			@Override
@@ -218,12 +248,14 @@ public class Form extends JFrame {
 		menuSize.add(menuItemSizeMedium);
 		menuSize.add(menuItemSizeLarge);
 		mainMenu.add(menuSize);
-		
-		// score
+	}
+	
+	private void initializeMenuHighscores() {
 		JMenuItem menuItemScoreEasy = new JMenuItem("Easy");
 		JMenuItem menuItemScoreMedium = new JMenuItem("Medium");
 		JMenuItem menuItemScoreHard = new JMenuItem("Hard");
 		JMenuItem menuItemScoreReset = new JMenuItem("Reset tables"); 
+		
 		menuItemScoreEasy.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) { scoreDialog(Rules.EASY); }
@@ -239,9 +271,8 @@ public class Form extends JFrame {
 		menuItemScoreReset.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) { 
-				if (yesNoDialog()) {
+				if (yesNoDialog("It will delete all records in every category."))
 					scoreManager.resetTables();
-				}
 			}
 		});
 		menuScore.add(menuItemScoreEasy);
@@ -253,7 +284,6 @@ public class Form extends JFrame {
 	
 	// MAIN
 	public static void main(String[] args) {
-
 		Form form = new Form();
 		form.setVisible(true);
 	}
