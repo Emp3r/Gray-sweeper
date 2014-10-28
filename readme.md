@@ -25,4 +25,4 @@ Data package implements tools for highscores management. ScoreManager control hi
 Utils package implements Rules class for difficulties constants and Appearance class for look and feel of the whole app.
 
 <hr>
-![](http://emper.cz/img/graysweeper.png)
+![](http://old.emper.cz/img/graysweeper.png)
